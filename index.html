@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; base-uri 'none'; form-action 'none'">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Piyo Morning</title>
+<style>
+:root{--egg:#fff3b8;--cream:#fffdf2;--yolk:#f5c542;--gold:#b8860b;--brown:#5a4318;--soft:#a85;}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:system-ui,"Hiragino Sans","Noto Sans JP",sans-serif;color:var(--brown);background:linear-gradient(var(--egg),var(--cream) 60%);}
+.wrap{max-width:520px;margin:0 auto;padding:16px 18px 40px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.brand{font-weight:800;color:var(--gold);font-size:18px;letter-spacing:.02em}
+.lang{display:flex;background:#fff;border:2px solid var(--yolk);border-radius:999px;overflow:hidden}
+.lang button{border:0;background:transparent;padding:6px 12px;font:inherit;font-size:13px;font-weight:700;color:var(--brown);cursor:pointer}
+.lang button[aria-pressed=true]{background:var(--yolk)}
+button:focus-visible{outline:3px solid #7a5200;outline-offset:2px}
+.hero{text-align:center;margin-top:8px}
+.chick{font-size:92px;line-height:1.1;display:inline-block;animation:bob 2.4s ease-in-out infinite;transform-origin:50% 90%}
+.chick.hop{animation:hop .5s ease}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes hop{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-18px) scale(1.06)}100%{transform:translateY(0) scale(1)}}
+.bubble{position:relative;background:#fff;border:2px solid var(--yolk);border-radius:20px;padding:16px 18px;margin:12px 6px 6px;font-size:17px;font-weight:800;line-height:1.6;min-height:70px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px #b8860b22}
+.bubble::before{content:"";position:absolute;top:-11px;left:50%;margin-left:-10px;width:16px;height:16px;background:#fff;border-left:2px solid var(--yolk);border-top:2px solid var(--yolk);transform:rotate(45deg)}
+.bubble.pop{animation:pop .35s ease}
+@keyframes pop{0%{transform:scale(.94);opacity:.4}100%{transform:scale(1);opacity:1}}
+h2{font-size:14px;color:var(--gold);margin:20px 0 8px}
+.row{display:flex;gap:8px}
+.row button{flex:1;background:#fff;border:2px solid var(--yolk);border-radius:16px;padding:10px 4px;font:inherit;font-weight:700;color:var(--brown);cursor:pointer;transition:transform .1s,background .15s}
+.row button:active{transform:scale(.96)}
+.row button[aria-pressed=true]{background:var(--yolk);box-shadow:0 3px 0 #d6a420}
+.w .em{display:block;font-size:28px}
+.w span.t{font-size:13px}
+.f{font-size:14px}
+.card{background:#fff;border-radius:18px;padding:16px;margin-top:20px;box-shadow:0 4px 14px #b8860b1f;border:2px solid #fbe9a0}
+.card h3{margin:0 0 10px;font-size:15px}
+.card ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.card li{display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.5;animation:pop .3s ease both}
+.card li .e{font-size:22px;width:30px;text-align:center}
+.hint{color:var(--soft);font-size:14px;text-align:center;padding:6px 0}
+footer{text-align:center;font-size:12px;color:var(--soft);margin-top:26px}
+@media(min-width:700px){.wrap{padding-top:36px}.chick{font-size:110px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">🐣 Piyo Morning</div>
+    <div class="lang" role="group" data-demo="lang-switch" data-i18n-aria="langLabel">
+      <button type="button" id="b-ja" data-demo="lang-ja">日本語</button>
+      <button type="button" id="b-en" data-demo="lang-en">EN</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="chick" id="chick" aria-hidden="true">🐥</div>
+    <div class="bubble" id="bubble" data-demo="piyo-bubble" aria-live="polite"></div>
+  </section>
+
+  <h2 data-i18n="q1"></h2>
+  <div class="row w" id="weather" role="group" data-i18n-aria="q1"></div>
+
+  <h2 data-i18n="q2"></h2>
+  <div class="row" id="feel" role="group" data-i18n-aria="q2"></div>
+
+  <div class="card" id="card" data-demo="suggestion-result">
+    <h3 data-i18n="todayTitle"></h3>
+    <div id="list"></div>
+  </div>
+
+  <footer data-i18n="foot"></footer>
+</div>
+
+<script>
+const R = {
+ "sunny-hot":{say:["カンカン照りだよ☀️ すずしくして出かけようね！","It's blazing hot ☀️ Dress cool and stay safe!"],items:[["👕","半袖Tシャツ","Short-sleeve T-shirt"],["🧢","帽子とサングラス","Hat and sunglasses"],["🧴","日焼け止め","Sunscreen"],["💧","水筒","Water bottle"]]},
+ "sunny-ok":{say:["いい天気だよ！おでかけ日和だね🌼","Lovely weather! Perfect day to go out 🌼"],items:[["👕","半袖＋薄手のカーディガン","Short sleeves + a light cardigan"],["🕶️","サングラス","Sunglasses"],["🧴","日焼け止め","Sunscreen"]]},
+ "sunny-cold":{say:["晴れてるけど空気はひんやり！あったかくしてね🧣","Sunny but chilly! Bundle up a little 🧣"],items:[["🧥","あたたかい上着","A warm jacket"],["🧣","マフラー","Scarf"],["🕶️","サングラス","Sunglasses"]]},
+ "rain-hot":{say:["むしむしの雨だよ☔ 汗とぬれにきをつけて！","Hot and rainy ☔ Watch out for sweat and puddles!"],items:[["👕","速乾Tシャツ","Quick-dry T-shirt"],["☂️","傘","Umbrella"],["🧻","タオル","Small towel"],["🩴","ぬれてもいいくつ","Shoes that can get wet"]]},
+ "rain-ok":{say:["今日は雨だよ☔ 傘と、はおれる上着を忘れずにね！","It's rainy today ☔ Don't forget your umbrella and a jacket!"],items:[["👕","長袖シャツ","Long-sleeve shirt"],["☂️","傘","Umbrella"],["👟","防水くつ","Waterproof shoes"]]},
+ "rain-cold":{say:["雨で寒いよ…しっかりあったかくしてね🧦","Cold and rainy… Please keep warm 🧦"],items:[["🧥","あったかいレインコート","Warm raincoat"],["☂️","傘","Umbrella"],["🥾","長ぐつ","Rain boots"],["🧦","替えの靴下","Spare socks"]]},
+ "cloudy-hot":{say:["くもりだけどむしむし！水分とってね💧","Cloudy but muggy! Drink plenty of water 💧"],items:[["👕","風通しのいい半袖","Breathable short sleeves"],["🧢","帽子","Cap"],["💧","水筒","Water bottle"],["🧻","汗ふきタオル","Sweat towel"]]},
+ "cloudy-ok":{say:["くもりだよ☁️ 過ごしやすい日！念のため傘もね","Cloudy ☁️ A comfy day! Take an umbrella just in case"],items:[["👕","長袖シャツ","Long-sleeve shirt"],["🧥","軽い上着","Light jacket"],["☂️","折りたたみ傘","Folding umbrella"]]},
+ "cloudy-cold":{say:["くもりでひんやり！ふわふわ着込んでね🧶","Cloudy and cold! Layer up and stay cozy 🧶"],items:[["🧶","セーター","Sweater"],["🧥","コート","Coat"],["🧣","マフラー","Scarf"]]}
+};
+const I18N = {
+ ja:{title:"Piyo Morning",langLabel:"言語",q1:"今日の空は？",q2:"体感は？",todayTitle:"今日のおすすめ",
+  hello:"おはよう！今日の空をえらんでね🌤️",askFeel:"いいね！体感はどうかな？",askWeather:"体感ありがとう！今日の空は？",
+  foot:"ぴよが毎朝、服と持ち物を教えるよ 🐥",empty:"天気と体感をえらぶと、ぴよがおすすめを教えるよ！",
+  weather:{sunny:["☀️","晴れ"],rain:["🌧️","雨"],cloudy:["☁️","くもり"]},
+  feel:{hot:["🥵","暑い"],ok:["😊","ちょうど"],cold:["🥶","寒い"]},ri:1},
+ en:{title:"Piyo Morning",langLabel:"Language",q1:"How's the sky today?",q2:"How do you feel?",todayTitle:"Today's picks",
+  hello:"Good morning! Pick today's sky 🌤️",askFeel:"Nice! And how do you feel?",askWeather:"Thanks! What's the sky like?",
+  foot:"Piyo tells you what to wear every morning 🐥",empty:"Pick the weather and how you feel, and Piyo will suggest!",
+  weather:{sunny:["☀️","Sunny"],rain:["🌧️","Rainy"],cloudy:["☁️","Cloudy"]},
+  feel:{hot:["🥵","Hot"],ok:["😊","Just right"],cold:["🥶","Cold"]},ri:2}
+};
+let lang="en", weather=null, feel=null;
+(function init(){
+  let l=null;
+  if(window.APP_LANG==="ja"||window.APP_LANG==="en") l=window.APP_LANG;
+  if(!l){try{const q=new URLSearchParams(location.search).get("lang");if(q==="ja"||q==="en")l=q;}catch(e){}}
+  if(!l){try{const s=localStorage.getItem("lang");if(s==="ja"||s==="en")l=s;}catch(e){}}
+  lang=l||"en";
+})();
+const $=id=>document.getElementById(id);
+function buildButtons(){
+  const d=I18N[lang];
+  $("weather").innerHTML=Object.keys(d.weather).map(k=>`<button type="button" class="wb" data-k="${k}" data-demo="weather-${k}" aria-pressed="${weather===k}"><span class="em">${d.weather[k][0]}</span><span class="t">${d.weather[k][1]}</span></button>`).join("");
+  $("feel").innerHTML=Object.keys(d.feel).map(k=>`<button type="button" class="f" data-k="${k}" data-demo="feel-${k}" aria-pressed="${feel===k}">${d.feel[k][0]} ${d.feel[k][1]}</button>`).join("");
+  $("weather").querySelectorAll("button").forEach(b=>b.onclick=()=>{weather=b.dataset.k;update(true);});
+  $("feel").querySelectorAll("button").forEach(b=>b.onclick=()=>{feel=b.dataset.k;update(true);});
+}
+function update(animate){
+  const d=I18N[lang];
+  buildButtons();
+  let say,items=null;
+  if(weather&&feel){const r=R[weather+"-"+feel];say=r.say[d.ri-1];items=r.items;}
+  else if(weather) say=d.askFeel;
+  else if(feel) say=d.askWeather;
+  else say=d.hello;
+  const b=$("bubble");b.textContent=say;
+  const list=$("list");
+  if(items){list.innerHTML="<ul>"+items.map((it,i)=>`<li style="animation-delay:${i*70}ms"><span class="e">${it[0]}</span><span>${it[d.ri]}</span></li>`).join("")+"</ul>";}
+  else list.innerHTML=`<div class="hint">${d.empty}</div>`;
+  if(animate){
+    b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");
+    const c=$("chick");c.classList.remove("hop");void c.offsetWidth;c.classList.add("hop");
+  }
+}
+function applyLang(){
+  const d=I18N[lang];
+  document.documentElement.lang=lang;
+  document.title=d.title;
+  document.querySelectorAll("[data-i18n]").forEach(e=>e.textContent=d[e.dataset.i18n]);
+  document.querySelectorAll("[data-i18n-aria]").forEach(e=>e.setAttribute("aria-label",d[e.dataset.i18nAria]));
+  $("b-ja").setAttribute("aria-pressed",lang==="ja");
+  $("b-en").setAttribute("aria-pressed",lang==="en");
+  update(false);
+}
+function setLang(l){lang=l;try{localStorage.setItem("lang",l);}catch(e){}applyLang();}
+$("b-ja").onclick=()=>setLang("ja");
+$("b-en").onclick=()=>setLang("en");
+applyLang();
+</script>
+</body>
+</html>

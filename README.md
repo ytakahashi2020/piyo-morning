@@ -1,2 +1,19 @@
-# piyo-morning
-天気と体感をタップすると、ひよこの「ぴよ」が今日の服と持ち物を一言で教えてくれるアプリ
+# Piyo Morning
+
+
+
+- ▶ **Try it:** https://ytakahashi2020.github.io/piyo-morning/
+
+## About
+
+See the app and [IDEA.md](IDEA.md) (the idea log, in Japanese).
+
+## How it was made
+
+Built by shaping the idea together with AI (Claude) and publishing the AI-written code.
+The full conversation is in [IDEA.md](IDEA.md) (Japanese).
+
+## Files
+
+- `index.html` — the app (a single self-contained file)
+- `IDEA.md` — the idea log
