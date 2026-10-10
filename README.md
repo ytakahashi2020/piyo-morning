@@ -3,6 +3,7 @@
 
 
 - ▶ **Try it:** https://ytakahashi2020.github.io/piyo-morning/
+- 🎬 **Demo video:** https://ytakahashi2020.github.io/piyo-morning/demo.mp4
 
 ## About
 
